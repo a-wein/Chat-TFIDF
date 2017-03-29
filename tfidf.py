@@ -1,3 +1,5 @@
+from __future__ import division
+
 import sys
 import random
 import math
@@ -23,7 +25,11 @@ def makeDocs(filename):
 			temp_doc = []
 			while i < len(lines) and string.count(lines[i],"@facebook") <= 1:
 				if "@facebook" not in lines[i]:
-					words = [w for w in lines[i].lower().split() if w not in stop]
+					words = []
+					for w in lines[i].lower().split():
+						w = re.sub(r'([^A-Za-z0-9])+',"",w)
+						if w not in stop:
+							words.append(w)
 					for w in words:
 						temp_doc.append(w)
 				i += 1
@@ -42,8 +48,10 @@ def tfIdf(word,doc,docs):
 	Does the TfIdf math
 	"""
 	tf = doc[word]/doc["totalCount"]
+	#print "{0}/{1} = {2}".format(doc[word],doc["totalCount"],doc[word]/doc["totalCount"])
 	docsContaining = sum(1 for d in docs if word in d)
 	idf = math.log(len(docs) / (1 + docsContaining))
+	#print "{0} * ({1}/{2}) = {3}".format(tf,len(docs),1+docsContaining,tf*idf)
 
 	return tf*idf
 
@@ -71,7 +79,11 @@ def buildWords(filename):
 			"""
 			Build words
 			"""
-			j = [k for k in i.lower().split() if k not in stop]
+			j = []
+			for k in i.lower().split():
+				k = re.sub(r'([^A-Za-z0-9])+',"",k)
+				if k not in stop:
+					j.append(k)
 			for k in j:
 				words.append(k)
 	"""
@@ -110,11 +122,13 @@ common_words = buildWords(sys.argv[2])
 
 top_words = scoreDoc(common_words,docs)
 
-print common_words.most_common(25)
+del common_words["totalCount"]
+
+pprint.pprint(common_words.most_common(25))
 
 i = 1
 for word, score in top_words[:25]:
-	print "{0} -- {1} -- {2}".format(i,word,round(score,5))
+	print "{0} -- {1}".format(i,word)
 	i += 1
 
 
