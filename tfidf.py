@@ -29,15 +29,29 @@ def buildWords(filename):
 				words.append(k)
 	"""
 	We now have a list of all the words, duplicates included
+	But return a counted dict of the words
 	"""
 	return collections.Counter(words), lines
 
-def rankWord(word):
+
+""""
+Drunk coding resulted in the following code
+"""
+
+def rankWord(word,words):
 	"""
 	Math to rank words
-	TODO
+	O(n^2) .... FIX
 	"""
-
+	wordtf = {}
+	for w in words:
+		wordtf[w] = 0
+		tf = words[w]/len(words)
+		rel_tf = 0
+		for e in words:
+			rel_tf += tf/(words[e])/len(words)
+			wordtf[e] = (e,rel_tf)
+	return wordtf
 
 def buildPhrases(lines,words):
 	phrases = []
